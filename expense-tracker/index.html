@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>即时记账</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <!-- 头部 -->
+        <header class="header">
+            <h1><i class="fas fa-wallet"></i> 即时记账</h1>
+            <div class="balance-section">
+                <div class="balance-card">
+                    <div class="balance-item">
+                        <span class="label">总余额</span>
+                        <span class="amount balance" id="totalBalance">¥0.00</span>
+                    </div>
+                    <div class="balance-item">
+                        <span class="label">收入</span>
+                        <span class="amount income" id="totalIncome">¥0.00</span>
+                    </div>
+                    <div class="balance-item">
+                        <span class="label">支出</span>
+                        <span class="amount expense" id="totalExpense">¥0.00</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- 添加记录表单 -->
+        <section class="add-transaction">
+            <h2>添加记录</h2>
+            <form id="transactionForm">
+                <div class="form-group">
+                    <label for="description">描述</label>
+                    <input type="text" id="description" placeholder="请输入消费描述..." required>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="amount">金额</label>
+                        <input type="number" id="amount" step="0.01" placeholder="0.00" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="category">分类</label>
+                        <select id="category" required>
+                            <option value="">选择分类</option>
+                            <optgroup label="支出">
+                                <option value="食物">🍽️ 食物</option>
+                                <option value="交通">🚗 交通</option>
+                                <option value="购物">🛍️ 购物</option>
+                                <option value="娱乐">🎮 娱乐</option>
+                                <option value="住房">🏠 住房</option>
+                                <option value="医疗">🏥 医疗</option>
+                                <option value="教育">📚 教育</option>
+                                <option value="其他支出">💸 其他支出</option>
+                            </optgroup>
+                            <optgroup label="收入">
+                                <option value="工资">💰 工资</option>
+                                <option value="奖金">🎁 奖金</option>
+                                <option value="投资">📈 投资</option>
+                                <option value="兼职">💼 兼职</option>
+                                <option value="其他收入">💵 其他收入</option>
+                            </optgroup>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="type">类型</label>
+                        <div class="type-selector">
+                            <button type="button" class="type-btn active" data-type="expense">
+                                <i class="fas fa-minus"></i> 支出
+                            </button>
+                            <button type="button" class="type-btn" data-type="income">
+                                <i class="fas fa-plus"></i> 收入
+                            </button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="date">日期</label>
+                        <input type="date" id="date" required>
+                    </div>
+                </div>
+
+                <button type="submit" class="submit-btn">
+                    <i class="fas fa-plus"></i> 添加记录
+                </button>
+            </form>
+        </section>
+
+        <!-- 筛选和搜索 -->
+        <section class="filters">
+            <div class="filter-row">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="searchInput" placeholder="搜索记录...">
+                </div>
+                <select id="filterCategory">
+                    <option value="">所有分类</option>
+                    <option value="食物">🍽️ 食物</option>
+                    <option value="交通">🚗 交通</option>
+                    <option value="购物">🛍️ 购物</option>
+                    <option value="娱乐">🎮 娱乐</option>
+                    <option value="住房">🏠 住房</option>
+                    <option value="医疗">🏥 医疗</option>
+                    <option value="教育">📚 教育</option>
+                    <option value="工资">💰 工资</option>
+                    <option value="奖金">🎁 奖金</option>
+                    <option value="投资">📈 投资</option>
+                    <option value="兼职">💼 兼职</option>
+                    <option value="其他收入">💵 其他收入</option>
+                    <option value="其他支出">💸 其他支出</option>
+                </select>
+                <select id="filterType">
+                    <option value="">所有类型</option>
+                    <option value="income">收入</option>
+                    <option value="expense">支出</option>
+                </select>
+            </div>
+        </section>
+
+        <!-- 交易记录列表 -->
+        <section class="transactions">
+            <div class="section-header">
+                <h2>交易记录</h2>
+                <button class="clear-btn" id="clearAll">
+                    <i class="fas fa-trash"></i> 清空记录
+                </button>
+            </div>
+            <div class="transactions-list" id="transactionsList">
+                <div class="empty-state">
+                    <i class="fas fa-receipt"></i>
+                    <p>暂无交易记录</p>
+                    <small>添加您的第一笔记录开始记账吧！</small>
+                </div>
+            </div>
+        </section>
+
+        <!-- 统计图表 -->
+        <section class="statistics">
+            <h2>支出统计</h2>
+            <div class="stats-container">
+                <div class="chart-container">
+                    <canvas id="expenseChart" width="300" height="300"></canvas>
+                </div>
+                <div class="stats-list" id="categoryStats">
+                    <!-- 统计数据将在这里显示 -->
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- 编辑模态框 -->
+    <div class="modal" id="editModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>编辑记录</h3>
+                <button class="close-btn" onclick="closeEditModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="editForm">
+                <div class="form-group">
+                    <label for="editDescription">描述</label>
+                    <input type="text" id="editDescription" required>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="editAmount">金额</label>
+                        <input type="number" id="editAmount" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editCategory">分类</label>
+                        <select id="editCategory" required>
+                            <option value="">选择分类</option>
+                            <optgroup label="支出">
+                                <option value="食物">🍽️ 食物</option>
+                                <option value="交通">🚗 交通</option>
+                                <option value="购物">🛍️ 购物</option>
+                                <option value="娱乐">🎮 娱乐</option>
+                                <option value="住房">🏠 住房</option>
+                                <option value="医疗">🏥 医疗</option>
+                                <option value="教育">📚 教育</option>
+                                <option value="其他支出">💸 其他支出</option>
+                            </optgroup>
+                            <optgroup label="收入">
+                                <option value="工资">💰 工资</option>
+                                <option value="奖金">🎁 奖金</option>
+                                <option value="投资">📈 投资</option>
+                                <option value="兼职">💼 兼职</option>
+                                <option value="其他收入">💵 其他收入</option>
+                            </optgroup>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="editType">类型</label>
+                        <div class="type-selector">
+                            <button type="button" class="type-btn" data-type="expense">
+                                <i class="fas fa-minus"></i> 支出
+                            </button>
+                            <button type="button" class="type-btn" data-type="income">
+                                <i class="fas fa-plus"></i> 收入
+                            </button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="editDate">日期</label>
+                        <input type="date" id="editDate" required>
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="cancel-btn" onclick="closeEditModal()">取消</button>
+                    <button type="submit" class="save-btn">保存</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
